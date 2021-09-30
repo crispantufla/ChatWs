@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+    <head>
+        <title>WebSocket Chat</title>
+        <link rel="stylesheet" href="/css/style.css">
+    </head>
+    <body>
+        <h3 class="heading">FANS DE NOAH</h3>
+        <form onsubmit="sendData(); return false">
+            <div id="name-div">
+                <p>Cual es tu nombre?</p>
+                <input class="input-form" id="name" name="name" autocomplete="off" placeholder="Escribe tu nombre aqui" autofocus required />
+                <button class="submit-button">Enviar</button>
+            </div>
+            <div id="content">
+                <div id="messages"></div>
+            </div>
+            <div id="input-div">
+                <input class="input-form" id="message" name="message" autocomplete="off" placeholder="Escribe tu mensaje aqui" required/>
+                <button class="submit-button" >Enviar</button>
+            </div>
+        </form>
+        <script>
+            websocket = new WebSocket("ws://localhost:8080/");
+
+            const sendData = () => {
+                let name = document.getElementById("name").value ? document.getElementById("name").value : "Anonymous";
+                document.getElementById("name-div").style.display = "none";
+                websocket.send(JSON.stringify({
+                    name: name,
+                    message: document.getElementById("message").value
+                }));
+                document.getElementById("message").focus();
+                document.getElementById("message").value = "";
+                updateScroll();
+            }
+
+            websocket.onmessage = (evt) => {
+                let div = document.createElement("div");
+                div.innerHTML = evt.data;
+                div.classList.add("message-box");
+                if (div.textContent.split(" ")[0] === document.getElementById("name").value) {
+                    div.classList.add("user-message-box");
+                    
+                }
+                document.getElementById("messages").appendChild(div)
+                updateScroll();
+            };
+
+            websocket.onerror = (evt) => {
+                let div = document.createElement("div");
+                div.innerHTML = "ERROR" + evt.data;
+                div.classList.add("message-box");
+                div.style.color = "red";
+                document.getElementById("messages").appendChild(div);
+                updateScroll();
+            };
+
+            const updateScroll = () => {
+                let element = document.getElementById("content");
+                element.scrollTop = element.scrollHeight;
+            }
+        </script>
+    </body>
+</html>
+ 
