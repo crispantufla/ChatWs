@@ -1,33 +1,24 @@
-require('dotenv').config();
-
+const WebSocketServer = require("ws").Server
 const express = require('express');
-const cors = require('cors');
+const http = require("http");
+const app = express();
+const path = require('path');
+const PORT = process.env.PORT || 3000;
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+const server = http.createServer(app)
+
+const wss = new WebSocketServer({server: server})
+console.log("websocket server created")
+
 const mongoose = require('mongoose');
 const messageModel = require('./models/message');
-
-const app = express();
-const http = require('http').Server(app);
-const path = require('path');
-
-const PORT = process.env.PORT || 3000;
-app.use(cors({
-	origin: '*',
-	optionsSuccessStatus: 200 
-}))
-
-app.use(express.static(path.join(__dirname, 'public')))
-
-const WebSocketServer = require('ws').Server;
-const wss = new WebSocketServer({
-    port: 8080
-})
 
 const main = async () => {
 
     await mongoose.connect('mongodb+srv://admin:vA3WC3XFAs8nMWQPcw3PD@cluster0.9lknw.mongodb.net/chat?retryWrites=true&w=majority', { useUnifiedTopology: true ,useNewUrlParser: true })
         .then(db => console.log('db is connected')).catch(err => console.log(err))
-
-
 
     wss.broadcast = (data) => {
         wss.clients.forEach((client) => {
@@ -55,7 +46,7 @@ const main = async () => {
         });
     })
 
-    http.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`server on port ${PORT}`)
     })
 }
