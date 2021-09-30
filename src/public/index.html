@@ -21,7 +21,9 @@
             </div>
         </form>
         <script>
-            websocket = new WebSocket("ws://localhost:8080/");
+
+            const HOST = location.origin.replace(/^http/, 'ws')
+            const websocket = new WebSocket(HOST);
 
             const sendData = () => {
                 let name = document.getElementById("name").value ? document.getElementById("name").value : "Anonymous";
