@@ -9,7 +9,7 @@
         <form onsubmit="sendData(); return false">
             <div id="name-div">
                 <p>Cual es tu nombre?</p>
-                <input class="input-form" id="name" name="name" autocomplete="off" placeholder="Escribe tu nombre aqui" autofocus required />
+                <input class="input-form" id="name" name="author" autocomplete="off" placeholder="Escribe tu nombre aqui" autofocus required />
                 <button class="submit-button">Enviar</button>
             </div>
             <div id="content">
@@ -29,8 +29,8 @@
                 let name = document.getElementById("name").value ? document.getElementById("name").value : "Anonymous";
                 document.getElementById("name-div").style.display = "none";
                 websocket.send(JSON.stringify({
-                    name: name,
-                    message: document.getElementById("message").value
+                    author: name,
+                    content: document.getElementById("message").value
                 }));
                 document.getElementById("message").focus();
                 document.getElementById("message").value = "";
@@ -38,14 +38,22 @@
             }
 
             websocket.onmessage = (evt) => {
-                let div = document.createElement("div");
-                div.innerHTML = evt.data;
-                div.classList.add("message-box");
-                if (div.textContent.split(" ")[0] === document.getElementById("name").value) {
-                    div.classList.add("user-message-box");
-                    
-                }
-                document.getElementById("messages").appendChild(div)
+                let jsonMenssage = JSON.parse(evt.data);
+
+                let authorDiv = document.createElement("div");
+                authorDiv.classList.add("author");
+                authorDiv.innerText = jsonMenssage.author;
+
+                let divContent = document.createElement("div");
+                divContent.classList.add("msg-content");
+                divContent.innerText = jsonMenssage.content;
+
+                let divMessageBox = document.createElement("div");
+                divMessageBox.classList.add("message-box");
+                divMessageBox.appendChild(authorDiv);
+                divMessageBox.appendChild(divContent);
+
+                document.getElementById("messages").appendChild(divMessageBox)
                 updateScroll();
             };
 
