@@ -15,7 +15,7 @@ console.log("websocket server created")
 const mongoose = require('mongoose');
 const messageModel = require('./models/message');
 
-const main = () => {
+
 
     mongoose.connect('mongodb+srv://admin:vA3WC3XFAs8nMWQPcw3PD@cluster0.9lknw.mongodb.net/chat?retryWrites=true&w=majority', { useUnifiedTopology: true ,useNewUrlParser: true })
         .then(db => console.log('db is connected')).catch(err => console.log(err))
@@ -49,6 +49,3 @@ const main = () => {
     server.listen(PORT, () => {
         console.log(`server on port ${PORT}`)
     })
-}
-
-main()
